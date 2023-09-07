@@ -21,4 +21,21 @@ dados_unnested <- dados %>% unnest_tokens(word, Sentence)
 #Vamos retirar números - pode ser qualquer coisa
 dados_unnested <- dados %>%  unnest_tokens(word, Sentence) %>% filter(!grepl('[0-9]', word))
 
+#anti Join para me livrar das stop_words, palavras que não me trazem informações relevantes 
+dados_unnested <- dados_unnested %>% anti_join(stop_words)
 
+#criando uma nova coluna com as palavras mais citadas no df
+common <- dados_unnested %>% count(word, sort = TRUE)
+
+#definindo paleta de cores para word cloud
+pal <- brewer.pal(8, 'Dark2')
+
+# word cloud
+common %>% with(wordcloud(word, n, random.order = FALSE, max.words = 50, colors=pal))
+
+
+
+#Stemming - vamos aplicar 
+dados_unnested_stem <-  dados_unnested %>%  mutate(stem = wordStem(word)) 
+
+dados_unnested_stem_count <- dados_unnested_stem %>%  mutate(stem = wordStem(word)) %>% count(stem, sort = TRUE)
